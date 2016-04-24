@@ -1,0 +1,12 @@
+{
+    "reservations": [
+        {
+            "day": "Tuesday",
+            "time": "6:00 AM"
+        },
+        {
+            "day": "Thursday",
+            "time": "6:00 AM"
+        }
+    ]
+}
