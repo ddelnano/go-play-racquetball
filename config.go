@@ -8,7 +8,7 @@ import (
 )
 
 type Configuration struct {
-	reservations []Reservation
+	Reservations []Reservation `json:"reservations"`
 }
 
 func Load(filepath string) (*Configuration, error) {
@@ -19,6 +19,5 @@ func Load(filepath string) (*Configuration, error) {
 		fmt.Println("error: ", err)
 	}
 
-	fmt.Println(config)
-	return &Configuration{}, err
+	return &config, err
 }

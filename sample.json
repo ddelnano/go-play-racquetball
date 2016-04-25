@@ -1,12 +1,14 @@
 {
     "reservations": [
         {
-            "day": "Tuesday",
-            "time": "6:00 AM"
+            "day": "Wednesday",
+            "time": 6,
+            "threshold": 10
         },
         {
             "day": "Thursday",
-            "time": "6:00 AM"
+            "time": 6,
+            "threshold": 10
         }
     ]
 }

@@ -2,18 +2,12 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
+	// "io/ioutil"
 	"testing"
-	"time"
 )
 
 func TestNewReservation(t *testing.T) {
-	today := time.Now().Weekday()
 	r := NewReservation()
-	assert.Equal(t, 14, r.threshold, "Threshold should be two weeks")
-	assert.Equal(t, r.day, today)
-}
-
-func TestUnmarchalJSON(t *testing.T) {
-
-	// assert.Equal(t, r.day, time.
+	assert.Equal(t, 14, r.Threshold, "Threshold should be two weeks")
+	assert.Equal(t, r.Day, "Sunday")
 }

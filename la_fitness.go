@@ -7,19 +7,16 @@ import (
 const RESERVATION_THRESHOLD int = 14
 
 type Reservation struct {
-	day       time.Weekday
-	time      int
-	threshold int
+	Day       string       `json:"day,time.Weekday"`
+	day       time.Weekday `json:-`
+	Time      int          `json:"time"`
+	Threshold int          `json:"threshold"`
 }
-
-// func (r *Reservation) UnmarshalJSON(by []byte) erorr {
-
-// }
 
 func NewReservation() *Reservation {
 	return &Reservation{
-		threshold: RESERVATION_THRESHOLD,
-		day:       time.Now().Weekday(),
+		Threshold: RESERVATION_THRESHOLD,
+		Day:       "Sunday",
 	}
 }
 
