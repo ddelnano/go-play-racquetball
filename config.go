@@ -3,7 +3,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -11,12 +10,19 @@ type Configuration struct {
 	Reservations []Reservation `json:"reservations"`
 }
 
-func Load(filepath string) (*Configuration, error) {
-	file, err := ioutil.ReadFile(filepath)
-	var config Configuration
-	err = json.Unmarshal(file, &config)
+func Load(filepath string, validate ReservationValidation) (*Configuration, error) {
+	// TODO: Should handle the Result type
+	_, err := validate(filepath)
+
 	if err != nil {
-		fmt.Println("error: ", err)
+		return nil, err
+	}
+	var config Configuration
+	file, _ := ioutil.ReadFile(filepath)
+	err = json.Unmarshal(file, &config)
+	// TODO: Should be able to test this condition
+	if err != nil {
+		panic(err)
 	}
 
 	return &config, err

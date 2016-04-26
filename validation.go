@@ -10,6 +10,8 @@ const (
 	RESERVATION_JSON_SCHEMA string = "./reservation.json"
 )
 
+type ReservationValidation func(string) (*gojsonschema.Result, error)
+
 func ValidateReservations(filepath string) (*gojsonschema.Result, error) {
 	loaderPath := fmt.Sprintf("file://%s", RESERVATION_JSON_SCHEMA)
 	documentPath := fmt.Sprintf("file://%s", filepath)

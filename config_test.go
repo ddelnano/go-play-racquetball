@@ -1,33 +1,33 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/xeipuuv/gojsonschema"
 	"testing"
 )
 
-type Test struct {
-	Name string
+func mockReservationValidation(file string) (*gojsonschema.Result, error) {
+	err := errors.New("validation has failed")
+	return nil, err
 }
 
-func TestLoadReturnsReservationStructs(t *testing.T) {
-	file := "./sample.json"
-	config, err := Load(file)
-	assert.Equal(t, nil, err)
-	assert.Equal(t, 2, len(config.Reservations))
-	assert.Equal(t, true, true)
+func mockReservationValiationPass(file string) (*gojsonschema.Result, error) {
+	return &gojsonschema.Result{}, nil
 }
 
-func TestJsonmarshal(t *testing.T) {
-	bytes := []byte(`{"name": "test"}`)
-	var test Test
-	err := json.Unmarshal(bytes, &test)
-	assert.Equal(t, err, nil)
+func TestLoadReturnsErrorIfValidationFails(t *testing.T) {
+	config, err := Load("./sample.json", mockReservationValidation)
+	assert.Nil(t, config)
+	assert.Equal(t, "validation has failed", err.Error())
 }
 
-func TestReservationUnmarshal(t *testing.T) {
-	bytes := []byte(`{ "day": "Wednesday", "time": 6, "threshold": 10}`)
-	var reservation Reservation
-	err := json.Unmarshal(bytes, &reservation)
-	assert.Equal(t, err, nil)
+func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
+	config, err := Load("./sample.json", mockReservationValiationPass)
+	assert.NotNil(t, config)
+	assert.Equal(t, config.Reservations[0].Day, "Wednesday")
+	assert.Equal(t, config.Reservations[1].Day, "Thursday")
+	assert.Equal(t, config.Reservations[0].Time, "6")
+	assert.Equal(t, config.Reservations[1].Time, "6")
+	assert.Nil(t, err)
 }
