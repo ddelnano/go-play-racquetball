@@ -47,8 +47,9 @@ func TestDailyReservations(t *testing.T) {
 	config := Configuration{
 		Reservations: []Reservation{
 			reservationForToday(),
+			reservationForToday(),
 			reservationNotToday(),
 		},
 	}
-	assert.Equal(t, 1, len(config.DailyReservations()))
+	assert.Equal(t, 2, len(config.DailyReservations()))
 }
