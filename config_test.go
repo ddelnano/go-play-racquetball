@@ -5,11 +5,22 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/xeipuuv/gojsonschema"
 	"testing"
+	"time"
 )
 
 func mockReservationValidation(file string) (*gojsonschema.Result, error) {
 	err := errors.New("validation has failed")
 	return nil, err
+}
+
+func reservationForToday() Reservation {
+	today := time.Now().Weekday().String()
+	return Reservation{Day: today}
+}
+
+func reservationNotToday() Reservation {
+	notToday := (time.Now().Weekday() + 1%7).String()
+	return Reservation{Day: notToday}
 }
 
 func mockReservationValiationPass(file string) (*gojsonschema.Result, error) {
@@ -30,4 +41,14 @@ func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
 	assert.Equal(t, config.Reservations[0].Time, "6")
 	assert.Equal(t, config.Reservations[1].Time, "6")
 	assert.Nil(t, err)
+}
+
+func TestDailyReservations(t *testing.T) {
+	config := Configuration{
+		Reservations: []Reservation{
+			reservationForToday(),
+			reservationNotToday(),
+		},
+	}
+	assert.Equal(t, 1, len(config.DailyReservations()))
 }

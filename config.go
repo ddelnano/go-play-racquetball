@@ -4,6 +4,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"time"
 )
 
 type Configuration struct {
@@ -26,4 +27,15 @@ func Load(filepath string, validate ReservationValidation) (*Configuration, erro
 	}
 
 	return &config, err
+}
+
+func (c *Configuration) DailyReservations() []Reservation {
+	daily := make([]Reservation, 0)
+	today := time.Now().Weekday().String()
+	for _, v := range c.Reservations {
+		if v.Day == today {
+			daily = append(daily, v)
+		}
+	}
+	return daily
 }
