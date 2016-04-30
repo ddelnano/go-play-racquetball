@@ -123,6 +123,7 @@ func NewLaRequestBody() *LaRequestBody {
 	}
 }
 
+// TODO: Utility function should be moved out into another package
 func EncodeBody(body interface{}) (*bytes.Buffer, error) {
 	if body == nil {
 		panic("Body argument should not be nil")
