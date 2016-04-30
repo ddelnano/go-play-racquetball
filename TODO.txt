@@ -1,0 +1,4 @@
+- Use env file to load environments variables for local dev (https://github.com/joho/godotenv)
+    - Travis build needs to use what is in travis.yml
+- Have la fitness api client schedule reservations
+    - Integration testing the api client to add reservations

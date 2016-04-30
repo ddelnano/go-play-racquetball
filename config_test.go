@@ -2,10 +2,11 @@ package main
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
-	"github.com/xeipuuv/gojsonschema"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 func mockReservationValidation(file string) (*gojsonschema.Result, error) {
@@ -19,7 +20,7 @@ func reservationForToday() Reservation {
 }
 
 func reservationNotToday() Reservation {
-	notToday := (time.Now().Weekday() + 1%7).String()
+	notToday := ((time.Now().Weekday() + 1) % 7).String()
 	return Reservation{Day: notToday}
 }
 
