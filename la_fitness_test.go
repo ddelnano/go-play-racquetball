@@ -91,6 +91,11 @@ func TestGetReservations(t *testing.T) {
 		if r.Method != "POST" {
 			t.Fail()
 		}
+
+		// TODO: This check should be moved into a generic request test
+		if username, pass, _ := r.BasicAuth(); username == "" && pass == "" {
+			t.Errorf("Username and password should be set")
+		}
 		var v LaRequestBody
 		err := json.NewDecoder(r.Body).Decode(&v)
 		defer r.Body.Close()

@@ -59,6 +59,7 @@ type LaFitnessClient struct {
 	Credentials Credentials
 }
 
+// TODO: Need to add http basic authentication so client is usable after creation
 func NewLaFitnessClient(client *http.Client, baseUrl *url.URL, cred Credentials) *LaFitnessClient {
 	return &LaFitnessClient{Client: client, BaseUrl: baseUrl, Credentials: cred}
 }
@@ -73,7 +74,10 @@ func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
 		panic("Encoding json body failed")
 	}
 
-	res, err := c.Client.Post(url, "application/json", body)
+	// TODO: This should be extracted for reuse
+	req, _ := http.NewRequest("POST", url, body)
+	req.SetBasicAuth(c.Credentials.Username, c.Credentials.Password)
+	res, err := c.Client.Do(req)
 	var reservations getReservationResponse
 	err = json.NewDecoder(res.Body).Decode(&reservations)
 	return transformReservations(reservations.Value.AmenityAppointments), err
@@ -91,7 +95,6 @@ func transformReservations(r []amenityAppointment) []Reservation {
 		startTime, _ := time.Parse(iso8601Format, appt.StartTime)
 		// endTime, _ := time.Parse(iso8601Format, appt.EndTime)
 		time := strconv.Itoa(startTime.Hour())
-		fmt.Println(startTime.Hour())
 		reservation := Reservation{
 			Day:  startTime.Weekday().String(),
 			Time: time,
@@ -153,8 +156,6 @@ func ViewReservations() (bool, error) {
 	req.SetBasicAuth("ddelnano", "Pitttigers2@")
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
-	fmt.Println(req.Body)
-	fmt.Println(resp)
 	contents, err := ioutil.ReadAll(resp.Body)
 	fmt.Printf("%s\n", string(contents))
 	return true, err
