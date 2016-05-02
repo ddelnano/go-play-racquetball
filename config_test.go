@@ -39,8 +39,8 @@ func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
 	assert.NotNil(t, config)
 	assert.Equal(t, config.Reservations[0].Day, "Wednesday")
 	assert.Equal(t, config.Reservations[1].Day, "Thursday")
-	assert.Equal(t, config.Reservations[0].Time, "6")
-	assert.Equal(t, config.Reservations[1].Time, "6")
+	assert.Equal(t, config.Reservations[0].StartTime, "6")
+	assert.Equal(t, config.Reservations[1].StartTime, "6")
 	assert.Nil(t, err)
 }
 

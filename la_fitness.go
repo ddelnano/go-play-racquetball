@@ -4,15 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 )
 
-const baseReservationsUrl = "/LAF_S4.5.2/Services/Private.svc/GetUpComingAppointments"
-const iso8601Format = "2006-01-02T15:04:00.000"
+const (
+	baseReservationsUrl = "/LAF_S4.5.2/Services/Private.svc/GetUpComingAppointments"
+	makeReservationUrl  = "/LAF_S4.5.2/Services/Private.svc/CreateAmenityAppointment_2"
+	iso8601Format       = "2006-01-02T15:04:00.000"
+)
+
+type LaFitnessRequest struct {
+	Value   interface{}
+	Request LaRequestBody
+}
 
 type amenityAppointment struct {
 	AmenitiesAppointmentID int
@@ -26,7 +32,7 @@ type amenityAppointment struct {
 }
 
 type getReservationResponse struct {
-	CurrentServerTime time.Time
+	CurrentServerTime string
 	Message           string
 	// ServerTimeZoneOffset
 	Success       bool
@@ -35,6 +41,16 @@ type getReservationResponse struct {
 		AmenityAppointments  []amenityAppointment
 		TrainingAppointments interface{}
 	}
+}
+
+type makeReservationRequest struct {
+	ClubID              string
+	ClubDescription     string
+	Duration            string
+	AmenitiesApptTypeID string
+	AmenityID           string
+	StartDate           string
+	StartDateUTC        string
 }
 
 type Credentials struct {
@@ -61,7 +77,11 @@ type LaFitnessClient struct {
 
 // TODO: Need to add http basic authentication so client is usable after creation
 func NewLaFitnessClient(client *http.Client, baseUrl *url.URL, cred Credentials) *LaFitnessClient {
-	return &LaFitnessClient{Client: client, BaseUrl: baseUrl, Credentials: cred}
+	return &LaFitnessClient{
+		Client:      client,
+		BaseUrl:     baseUrl,
+		Credentials: cred,
+	}
 }
 
 func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
@@ -76,14 +96,53 @@ func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
 
 	// TODO: This should be extracted for reuse
 	req, _ := http.NewRequest("POST", url, body)
+	req.Header.Add("Content-Type", "application/json")
 	req.SetBasicAuth(c.Credentials.Username, c.Credentials.Password)
 	res, err := c.Client.Do(req)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	defer res.Body.Close()
 	var reservations getReservationResponse
 	err = json.NewDecoder(res.Body).Decode(&reservations)
 	return transformReservations(reservations.Value.AmenityAppointments), err
 }
 
-func (*LaFitnessClient) MakeReservation(*Reservation) ([]Reservation, error) {
+func NewMakeReservationRequest() *LaFitnessRequest {
+	return &LaFitnessRequest{
+		Value: makeReservationRequest{
+			ClubID:              "1010",
+			ClubDescription:     "PITTSBURGH-PENN AVE",
+			Duration:            "60",
+			AmenitiesApptTypeID: "1",
+			AmenityID:           "0",
+			StartDate:           "2016-05-10T09:00:00.000",
+			StartDateUTC:        "2016-05-10T13:00:00.000Z",
+		},
+		Request: *NewLaRequestBody(),
+	}
+}
+
+func (c *LaFitnessClient) MakeReservation(*Reservation) ([]Reservation, error) {
+	baseUrl := c.BaseUrl.String()
+	url := fmt.Sprintf("%s%s", baseUrl, makeReservationUrl)
+	requestBody := NewMakeReservationRequest()
+	body, err := EncodeBody(requestBody)
+
+	if err != nil {
+		panic("Encoding json body failed")
+	}
+
+	req, _ := http.NewRequest("POST", url, body)
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth(c.Credentials.Username, c.Credentials.Password)
+	res, err := c.Client.Do(req)
+	defer res.Body.Close()
+
+	if err != nil {
+		panic(err.Error())
+	}
 	return nil, nil
 }
 
@@ -91,13 +150,13 @@ func (*LaFitnessClient) MakeReservation(*Reservation) ([]Reservation, error) {
 func transformReservations(r []amenityAppointment) []Reservation {
 	res := make([]Reservation, 0)
 	for _, appt := range r {
-		// fmt.Printf("%#v", appt)
 		startTime, _ := time.Parse(iso8601Format, appt.StartTime)
+		endTime, _ := time.Parse(iso8601Format, appt.EndTime)
 		// endTime, _ := time.Parse(iso8601Format, appt.EndTime)
-		time := strconv.Itoa(startTime.Hour())
 		reservation := Reservation{
-			Day:  startTime.Weekday().String(),
-			Time: time,
+			Day:       startTime.Weekday().String(),
+			StartTime: fmt.Sprintf("%d:%02d", startTime.Hour(), startTime.Minute()),
+			EndTime:   fmt.Sprintf("%d:%02d", endTime.Hour(), endTime.Minute()),
 		}
 		res = append(res, reservation)
 	}
@@ -134,29 +193,8 @@ func EncodeBody(body interface{}) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	err := json.NewEncoder(buf).Encode(body)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	return buf, nil
-}
-
-func ViewReservations() (bool, error) {
-	data := []byte(`{
-    "request": {
-	"Client": {
-	    "OSName": "iPhone"
-	}
-    }
-}`)
-	client := &http.Client{}
-	// resp, err := client.Post("https://publicapi.lafitness.com/LAF_S4.5.2/Services/Private.svc/GetUpComingAppointments", "application/json", bytes.NewBuffer(data))
-	req, err := http.NewRequest("POST", "https://publicapi.lafitness.com/LAF_S4.5.2/Services/Private.svc/GetUpComingAppointments", bytes.NewBuffer(data))
-
-	req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("Authorization", "Basic ZGRlbG5hbm86UGl0dHRpZ2VyczJA")
-	req.SetBasicAuth("ddelnano", "Pitttigers2@")
-	resp, err := client.Do(req)
-	defer resp.Body.Close()
-	contents, err := ioutil.ReadAll(resp.Body)
-	fmt.Printf("%s\n", string(contents))
-	return true, err
 }
