@@ -1,8 +1,9 @@
 // Package main provides ...
-package main
+package racquetball
 
 import (
 	"fmt"
+
 	"github.com/xeipuuv/gojsonschema"
 )
 

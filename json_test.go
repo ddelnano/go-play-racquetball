@@ -1,10 +1,11 @@
 // Package main provides ...
-package main
+package racquetball
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestjsonMarshal(t *testing.T) {

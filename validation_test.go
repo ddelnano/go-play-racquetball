@@ -1,9 +1,10 @@
 // Package main provides ...
-package main
+package racquetball
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValiationForValidReservationFile(t *testing.T) {

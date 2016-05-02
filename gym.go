@@ -1,5 +1,5 @@
 // Package main provides ...
-package main
+package racquetball
 
 type Reservation struct {
 	Day       string `json:"day,time.Weekday"`
