@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/fatih/structs"
@@ -176,28 +174,6 @@ func TestMakeReservation(t *testing.T) {
 func TestLaFitnessRequest(t *testing.T) {
 	requestBody := NewLaRequestBody()
 	assert.Equal(t, "iPhone", requestBody.Request.Client.OSName)
-}
-
-func TestEncodyBodyFailsIfBodyNil(t *testing.T) {
-	assert.Panics(t, func() {
-		EncodeBody(nil)
-	})
-}
-
-func TestEncodeBodyEncodesToJSONBuffer(t *testing.T) {
-	type testBody struct {
-		Test    string `json:"test"`
-		Another string `json:"another"`
-	}
-	body := testBody{
-		Test:    "testing",
-		Another: "string",
-	}
-	by, ok := EncodeBody(body)
-	data := []byte(`{"test":"testing","another":"string"}`)
-	expectedBuffer := bytes.NewBuffer(data)
-	assert.Equal(t, strings.TrimSpace(expectedBuffer.String()), strings.TrimSpace(by.String()))
-	assert.Nil(t, ok)
 }
 
 func Test_transformReservations(t *testing.T) {
