@@ -41,11 +41,13 @@ func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
 	assert.Equal(t, config.Reservations[0].StartTime, "6")
 	assert.Equal(t, config.Reservations[0].Duration, "60")
 	assert.Equal(t, config.Reservations[0].ClubID, "1010")
+	assert.Equal(t, config.Reservations[0].ClubDescription, "PITTSBURGH-PENN AVE")
 
 	assert.Equal(t, config.Reservations[1].Day, "Thursday")
 	assert.Equal(t, config.Reservations[1].StartTime, "6")
 	assert.Equal(t, config.Reservations[1].Duration, "60")
 	assert.Equal(t, config.Reservations[1].ClubID, "1010")
+	assert.Equal(t, config.Reservations[1].ClubDescription, "PITTSBURGH-PENN AVE")
 	assert.Nil(t, err)
 }
 

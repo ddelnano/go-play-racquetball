@@ -12,6 +12,7 @@
                     "day",
                     "duration",
                     "clubID",
+                    "clubDescription",
                     "time"
                 ],
                 "properties": {
@@ -28,6 +29,9 @@
                         ]
                     },
                     "clubID": {
+                        "type": "string"
+                    },
+                    "clubDescription": {
                         "type": "string"
                     },
                     "duration": {
