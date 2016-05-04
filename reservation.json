@@ -10,6 +10,7 @@
                 "type": "object",
                 "required": [
                     "day",
+                    "duration",
                     "time"
                 ],
                 "properties": {
@@ -24,6 +25,9 @@
                             "Friday",
                             "Saturday"
                         ]
+                    },
+                    "duration": {
+                        "type": "string"
                     },
                     "time": {
                         "type": "string",

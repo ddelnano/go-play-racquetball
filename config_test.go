@@ -38,9 +38,12 @@ func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
 	config, err := Load("./sample.json", mockReservationValiationPass)
 	assert.NotNil(t, config)
 	assert.Equal(t, config.Reservations[0].Day, "Wednesday")
-	assert.Equal(t, config.Reservations[1].Day, "Thursday")
 	assert.Equal(t, config.Reservations[0].StartTime, "6")
+	assert.Equal(t, config.Reservations[0].Duration, "60")
+
+	assert.Equal(t, config.Reservations[1].Day, "Thursday")
 	assert.Equal(t, config.Reservations[1].StartTime, "6")
+	assert.Equal(t, config.Reservations[1].Duration, "60")
 	assert.Nil(t, err)
 }
 
