@@ -6,6 +6,7 @@ type Reservation struct {
 	StartTime string `json:"time"`
 	EndTime   string `json:"endTime"`
 	Duration  string
+	ClubID    string
 }
 
 type GymClient interface {

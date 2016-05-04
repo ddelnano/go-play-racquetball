@@ -3,11 +3,13 @@
         {
             "day": "Wednesday",
             "time": "6",
+            "clubID": "1010",
             "duration": "60"
         },
         {
             "day": "Thursday",
             "time": "6",
+            "clubID": "1010",
             "duration": "60"
         }
     ]
