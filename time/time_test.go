@@ -7,30 +7,57 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type test struct {
 	Time UTCTime
 }
 
+func getUnmarshalTimeForHour(hour string) string {
+	expectedTime := time.Now().Format(format)
+	return fmt.Sprintf("%s %s -0400 EDT", expectedTime, hour)
+}
+
 func TestUnmarshalUTCTime(t *testing.T) {
-	var data = `
-	{"Time": "6:00"}
-`
+
+	tests := []struct {
+		data     []byte
+		expected string
+	}{
+		{
+			data:     []byte(`{"Time": "6:00"}`),
+			expected: getUnmarshalTimeForHour("06:00:00"),
+		},
+		{
+			data:     []byte(`{"Time": "6:30"}`),
+			expected: getUnmarshalTimeForHour("06:30:00"),
+		},
+	}
+
+	for _, v := range tests {
+		test := test{}
+
+		err := json.Unmarshal(v.data, &test)
+		str := test.Time.String()
+
+		if err != nil {
+			t.Errorf("UnmarshalJSON failed for %s with error", v.data, err)
+		}
+
+		if strings.Compare(v.expected, str) != 0 {
+			t.Fatalf("String value of time %s not equal to %s", str, v.expected)
+		}
+	}
+}
+
+func TestUnmarshalUTCTimeFailsIfTimeDoesNotSpecifyHourAndMinutes(t *testing.T) {
 	test := test{}
 
-	err := json.Unmarshal([]byte(data), &test)
-	str := test.Time.String()
-
-	if err != nil {
-		t.Fatalf("json.Marshal failed with error: %s", err.Error())
-	}
-
-	expectedTime := time.Now().Format(format)
-	expected := expectedTime + ` 06:00:00 -0400 EDT`
-	if strings.Compare(expected, str) != 0 {
-		t.Fatalf("String value of time %s not equal to %s", str, expected)
-	}
+	assert.Panics(t, func() {
+		json.Unmarshal([]byte(`{"Time": "6"}`), &test)
+	}, "JSON value of `6` should not be parsable")
 }
 
 func TestMarshalUTC(t *testing.T) {

@@ -30,6 +30,10 @@ func (t *UTCTime) UnmarshalJSON(b []byte) error {
 	}
 	now := time.Now().UTC()
 	ymd := now.Format(format)
+
+	if !bytes.Contains(b, []byte(`:`)) {
+		panic("json is in invalid format")
+	}
 	times := bytes.Split(b, []byte(`:`))
 	hours, _ := strconv.ParseInt(string(times[0]), 10, 0)
 	test := fmt.Sprintf("%sT%02d:%s:00.000", ymd, hours, string(times[1]))
