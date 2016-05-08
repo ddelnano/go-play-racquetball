@@ -4,6 +4,7 @@ package time
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -83,5 +84,27 @@ func TestMarshalUTC(t *testing.T) {
 	)
 	if strings.Compare(`{"Time":"`+iso8601Value+`"}`, string(data)) != 0 {
 		t.Fatalf("String value from json.Marshal incorrect: %s", string(data))
+	}
+}
+
+func TestISO8601(t *testing.T) {
+	now := time.Now()
+	time := UTCTime{now}
+	value := time.ISO8601()
+	regex := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}$`)
+
+	if !regex.MatchString(value) {
+		t.Errorf("Expected ISO 8601 format but received %s", value)
+	}
+}
+
+func TestISO8601UTC(t *testing.T) {
+	now := time.Now()
+	time := UTCTime{now}
+	value := time.ISO8601UTC()
+	regex := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`)
+
+	if !regex.MatchString(value) {
+		t.Errorf("Expected ISO 8601 format in UTC but received %s", value)
 	}
 }

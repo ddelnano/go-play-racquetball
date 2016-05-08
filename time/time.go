@@ -42,3 +42,11 @@ func (t *UTCTime) UnmarshalJSON(b []byte) error {
 	t.Time, _ = time.ParseInLocation(Format, test, loc)
 	return nil
 }
+
+func (t *UTCTime) ISO8601() string {
+	return t.Format(iso8601Format)
+}
+
+func (t *UTCTime) ISO8601UTC() string {
+	return t.ISO8601() + `Z`
+}
