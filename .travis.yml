@@ -3,6 +3,8 @@ go:
 - '1.4'
 - '1.5'
 - '1.6'
+before_install:
+  - git clone https://github.com/ddelnano/go-play-racquetball
 env:
   global:
   - secure: C6JtDT4xXkcP64cxTye9rLutU4qoEZ/KOFZ3m+bVj4S+7c3raFFNZVE7shDoOcUHyoaZBEcNTWC/f5DjMl0BpKM3xyw0tTVONrEaC1AOWkqxJCJOi+O1f2j4qCQFcJjCzjRpiZE4EIMGhsXr2ZQoFY5xMLsDRS0PUSRzOMcavKkuLPKeL+UMni3QJbgftyn6V7AefbY5T5RcXkwpa7D/atopAfwkx2E0XMNwEI34kaZEu4EXEBEBylmfODk7Qucqj9IArDhhoE5547XK3XCGJSZJ8ENvsutuyr98+zda/+Lg6bmdmAC3waNZZInHS/8WI3K/7SJ9AsWp+B0z7Jx1ATv2tVTfAquxzrmbzUVwvJ6sYIN9ACsyqG8wFG0j7aY8MHjFZ3BKGAs0r9V0vxg3eWlf37e0h2xnn6cpGpMhkSGEyZAVn00VWZx6wV365Qk0Sz7bL2kynZS91uaRkTw0onmpv+3WR55iKssZ/IKY6SGZNou8PRWcmQYIIQHhT17uRQjb898XUt7iaPVstedb4Sk7vN/37VBIO9daIbD+5Kfwf5UKyEivYOiUrxtyCicL/ibNiBR1ByGs5l4u6LFbd1hcrKKUkGr00FV9MOPkJCXQhbbQkM28mi1LxCZSJ6ji3mgzttOlg5vUIz9eWRCvTaUsKhiTCQz6xSpHz+e9XV8=
