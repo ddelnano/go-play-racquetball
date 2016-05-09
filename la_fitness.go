@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	rtime "github.com/ddelnano/racquetball/time"
 )
 
 const (
@@ -42,7 +44,15 @@ type getReservationResponse struct {
 	}
 }
 
-type makeReservationRequest struct {
+type MakeReservationResponse struct {
+	CurrentServerTime string
+	Message           string
+	// ServerTimeZoneOffset
+	Success bool
+	// Value   interface{}
+}
+
+type MakeReservationRequest struct {
 	ClubID              string
 	ClubDescription     string
 	Duration            string
@@ -108,25 +118,25 @@ func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
 	return transformReservations(reservations.Value.AmenityAppointments), err
 }
 
-func NewMakeReservationRequest() *LaFitnessRequest {
+func NewMakeReservationRequest(res Reservation) *LaFitnessRequest {
 	return &LaFitnessRequest{
-		Value: makeReservationRequest{
+		Value: MakeReservationRequest{
 			ClubID:              "1010",
 			ClubDescription:     "PITTSBURGH-PENN AVE",
-			Duration:            "60",
+			Duration:            res.Duration,
 			AmenitiesApptTypeID: "1",
 			AmenityID:           "0",
-			StartDate:           "2016-05-10T09:00:00.000",
-			StartDateUTC:        "2016-05-10T13:00:00.000Z",
+			StartDate:           res.StartTime.ISO8601(),
+			StartDateUTC:        res.StartTime.ISO8601UTC(),
 		},
 		Request: *NewLaRequestBody(),
 	}
 }
 
-func (c *LaFitnessClient) MakeReservation(*Reservation) ([]Reservation, error) {
+func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 	baseUrl := c.BaseUrl.String()
 	url := fmt.Sprintf("%s%s", baseUrl, makeReservationUrl)
-	requestBody := NewMakeReservationRequest()
+	requestBody := NewMakeReservationRequest(r)
 	body, err := EncodeBody(requestBody)
 
 	if err != nil {
@@ -142,7 +152,15 @@ func (c *LaFitnessClient) MakeReservation(*Reservation) ([]Reservation, error) {
 	if err != nil {
 		panic(err.Error())
 	}
-	return nil, nil
+
+	makeResResponse := MakeReservationResponse{}
+	json.NewDecoder(res.Body).Decode(&makeResResponse)
+
+	if !makeResResponse.Success {
+		panic("Attempted to make reservation for ")
+	}
+
+	return nil
 }
 
 // TODO: Needs tests
@@ -151,10 +169,9 @@ func transformReservations(r []amenityAppointment) []Reservation {
 	for _, appt := range r {
 		startTime, _ := time.Parse(iso8601Format, appt.StartTime)
 		endTime, _ := time.Parse(iso8601Format, appt.EndTime)
-		// endTime, _ := time.Parse(iso8601Format, appt.EndTime)
 		reservation := Reservation{
 			Day:       startTime.Weekday().String(),
-			StartTime: fmt.Sprintf("%d:%02d", startTime.Hour(), startTime.Minute()),
+			StartTime: rtime.UTCTime{Time: startTime},
 			EndTime:   fmt.Sprintf("%d:%02d", endTime.Hour(), endTime.Minute()),
 		}
 		res = append(res, reservation)

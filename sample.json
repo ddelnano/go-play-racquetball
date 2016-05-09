@@ -2,14 +2,14 @@
     "reservations": [
         {
             "day": "Wednesday",
-            "time": "6",
+            "time": "6:00",
             "clubID": "1010",
             "clubDescription": "PITTSBURGH-PENN AVE",
             "duration": "60"
         },
         {
             "day": "Thursday",
-            "time": "6",
+            "time": "6:00",
             "clubID": "1010",
             "clubDescription": "PITTSBURGH-PENN AVE",
             "duration": "60"

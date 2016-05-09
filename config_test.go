@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	rtime "github.com/ddelnano/racquetball/time"
 	"github.com/stretchr/testify/assert"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -38,13 +39,15 @@ func TestLoadReturnsConfigurationStructIfValidationPasses(t *testing.T) {
 	config, err := Load("./sample.json", mockReservationValiationPass)
 	assert.NotNil(t, config)
 	assert.Equal(t, config.Reservations[0].Day, "Wednesday")
-	assert.Equal(t, config.Reservations[0].StartTime, "6")
+	// assert.Equal(t, config.Reservations[0].StartTime, "6")
+	assert.IsType(t, rtime.UTCTime{}, config.Reservations[0].StartTime)
 	assert.Equal(t, config.Reservations[0].Duration, "60")
 	assert.Equal(t, config.Reservations[0].ClubID, "1010")
 	assert.Equal(t, config.Reservations[0].ClubDescription, "PITTSBURGH-PENN AVE")
 
 	assert.Equal(t, config.Reservations[1].Day, "Thursday")
-	assert.Equal(t, config.Reservations[1].StartTime, "6")
+	// assert.Equal(t, config.Reservations[1].StartTime, "6")
+	assert.IsType(t, rtime.UTCTime{}, config.Reservations[1].StartTime)
 	assert.Equal(t, config.Reservations[1].Duration, "60")
 	assert.Equal(t, config.Reservations[1].ClubID, "1010")
 	assert.Equal(t, config.Reservations[1].ClubDescription, "PITTSBURGH-PENN AVE")

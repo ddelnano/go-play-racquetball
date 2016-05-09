@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const iso8601Regex = `^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`
+
 type test struct {
 	Time UTCTime
 }
@@ -102,7 +104,7 @@ func TestISO8601UTC(t *testing.T) {
 	now := time.Now()
 	time := UTCTime{now}
 	value := time.ISO8601UTC()
-	regex := regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`)
+	regex := regexp.MustCompile(iso8601Regex)
 
 	if !regex.MatchString(value) {
 		t.Errorf("Expected ISO 8601 format in UTC but received %s", value)

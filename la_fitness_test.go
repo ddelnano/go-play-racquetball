@@ -7,7 +7,9 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
+	"time"
 
+	rtime "github.com/ddelnano/racquetball/time"
 	"github.com/fatih/structs"
 	"github.com/stretchr/testify/assert"
 )
@@ -136,12 +138,47 @@ func TestGetReservations(t *testing.T) {
 	// TODO: Add DeepEqual here with expected struct
 	assert.Equal(t, 2, len(reservations))
 	assert.Equal(t, "Sunday", reservations[0].Day)
-	assert.Equal(t, "12:30", reservations[0].StartTime)
+	// assert.Equal(t, "12:30", reservations[0].StartTime)
+	assert.IsType(t, rtime.UTCTime{}, reservations[0].StartTime)
 	assert.Nil(t, ok)
+}
+
+func TestMakeNewReservationRequest(t *testing.T) {
+	res := Reservation{
+		Duration: "60",
+		StartTime: rtime.UTCTime{
+			time.Now(),
+		},
+	}
+	// expectedRequest := LaFitnessRequest{
+	// 	Value: MakeReservationRequest{
+	// 		ClubID:              "1010",
+	// 		ClubDescription:     "PITTSBURGH-PENN AVE",
+	// 		Duration:            duration,
+	// 		AmenitiesApptTypeID: "1",
+	// 		AmenityID:           "0",
+	// 		StartDate:           "2016-05-10T09:00:00.000",
+	// 		StartDateUTC:        "2016-05-10T13:00:00.000Z",
+	// 	},
+	// }
+	// var startTime rtime.UTCTime
+	// data := []byte(`{"Time":"6:30"}`)
+	// json.Unmarshal(data, startTime)
+	// res := Reservation{
+	// 	Day:       "Sunday",
+	// 	StartTime: startTime,
+	// 	Duration:  duration,
+	// }
+	resRequest := NewMakeReservationRequest(res)
+	makeResRequest := resRequest.Value.(MakeReservationRequest)
+	assert.Equal(t, res.Duration, makeResRequest.Duration, "Duration should make Reservation's")
+	assert.Equal(t, res.StartTime.ISO8601(), makeResRequest.StartDate)
+	assert.Equal(t, res.StartTime.ISO8601UTC(), makeResRequest.StartDateUTC)
 }
 
 // TODO: Handle errors and if success key in response is false
 func TestMakeReservation(t *testing.T) {
+	res := new(Reservation)
 	mux := http.NewServeMux()
 	mux.HandleFunc(makeReservationUrl, func(w http.ResponseWriter, r *http.Request) {
 		testRequestMethod(t, r, "POST")
@@ -151,7 +188,7 @@ func TestMakeReservation(t *testing.T) {
 		json.NewDecoder(r.Body).Decode(&v)
 		defer r.Body.Close()
 
-		expected := *NewMakeReservationRequest()
+		expected := *NewMakeReservationRequest(*res)
 		if !reflect.DeepEqual(expected.Request, v.Request) {
 			t.Errorf("Request body = %#v, expected %#v", v, expected)
 		}
@@ -159,6 +196,18 @@ func TestMakeReservation(t *testing.T) {
 		if !reflect.DeepEqual(structs.Map(expected.Value), v.Value) {
 			t.Errorf("Request body = %#v, expected %#v", v.Value, expected.Value)
 		}
+
+		data := []byte(
+			`{
+			  "CurrentServerTime": "05-08-16 15:42:58",
+			  "Message": "Message",
+			  "ServerTimeZoneOffset": "-07:00:00",
+			  "Success": true,
+			  "UTCServerTime": "2016-05-08T22:42:58.3208260Z"
+			 }
+			`)
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
 	})
 
 	s := httptest.NewServer(mux)
@@ -168,7 +217,44 @@ func TestMakeReservation(t *testing.T) {
 	baseUrl, _ := url.Parse(s.URL)
 	cred := Credentials{Username: "ddelnano", Password: "password"}
 	laClient := NewLaFitnessClient(client, baseUrl, cred)
-	laClient.MakeReservation(nil)
+	laClient.MakeReservation(*res)
+}
+
+func TestMakeReservationWhenLaRespondsWithSuccessFalse(t *testing.T) {
+	res := new(Reservation)
+	mux := http.NewServeMux()
+	mux.HandleFunc(makeReservationUrl, func(w http.ResponseWriter, r *http.Request) {
+		testRequestMethod(t, r, "POST")
+		testBasicAuthSet(t, r)
+
+		var v LaFitnessRequest
+		json.NewDecoder(r.Body).Decode(&v)
+		defer r.Body.Close()
+
+		data := []byte(
+			`{
+			  "CurrentServerTime": "05-08-16 15:42:58",
+			  "Message": "Message",
+			  "ServerTimeZoneOffset": "-07:00:00",
+			  "Success": false,
+			  "UTCServerTime": "2016-05-08T22:42:58.3208260Z"
+			 }
+			`)
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+	})
+
+	s := httptest.NewServer(mux)
+	defer s.Close()
+
+	client := http.DefaultClient
+	baseUrl, _ := url.Parse(s.URL)
+	cred := Credentials{Username: "ddelnano", Password: "password"}
+	laClient := NewLaFitnessClient(client, baseUrl, cred)
+
+	assert.Panics(t, func() {
+		laClient.MakeReservation(*res)
+	})
 }
 
 func TestLaFitnessRequest(t *testing.T) {
@@ -191,8 +277,10 @@ func Test_transformReservations(t *testing.T) {
 	res := transformReservations(appts)
 
 	assert.Equal(t, 2, len(res))
-	assert.Equal(t, "14:04", res[0].StartTime)
-	assert.Equal(t, "12:30", res[1].StartTime)
+	// assert.Equal(t, "14:04", res[0].StartTime)
+	// assert.Equal(t, "12:30", res[1].StartTime)
+	assert.IsType(t, rtime.UTCTime{}, res[0].StartTime)
+	assert.IsType(t, rtime.UTCTime{}, res[1].StartTime)
 	assert.Equal(t, "15:04", res[0].EndTime)
 	assert.Equal(t, "13:30", res[1].EndTime)
 }
