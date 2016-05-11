@@ -28,7 +28,7 @@ func (t *UTCTime) UnmarshalJSON(b []byte) error {
 	if b[0] == '"' && b[len(b)-1] == '"' {
 		b = b[1 : len(b)-1]
 	}
-	now := time.Now().UTC()
+	now := time.Now()
 	ymd := now.Format(format)
 
 	if !bytes.Contains(b, []byte(`:`)) {
