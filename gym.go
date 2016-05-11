@@ -10,7 +10,6 @@ type Reservation struct {
 	Duration        string
 	ClubID          string
 	ClubDescription string
-	Test            rtime.UTCTime
 }
 
 type GymClient interface {

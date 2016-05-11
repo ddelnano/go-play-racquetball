@@ -48,5 +48,7 @@ func (t *UTCTime) ISO8601() string {
 }
 
 func (t *UTCTime) ISO8601UTC() string {
-	return t.ISO8601() + `Z`
+	// TODO: Location line has no test asssertion
+	loc, _ := time.LoadLocation("UTC")
+	return t.In(loc).Format(iso8601Format) + `Z`
 }

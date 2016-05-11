@@ -29,6 +29,16 @@ func Load(filepath string, validate ReservationValidation) (*Configuration, erro
 	return &config, err
 }
 
+func (c *Configuration) ReservationsForWeek() []Reservation {
+	res := c.DailyReservations()
+	weekRes := make([]Reservation, 0)
+	for _, v := range res {
+		v.StartTime.Time = v.StartTime.AddDate(0, 0, 7)
+		weekRes = append(weekRes, v)
+	}
+	return weekRes
+}
+
 func (c *Configuration) DailyReservations() []Reservation {
 	daily := make([]Reservation, 0)
 	today := time.Now().Weekday().String()

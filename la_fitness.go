@@ -48,6 +48,7 @@ type MakeReservationResponse struct {
 	CurrentServerTime string
 	Message           string
 	// ServerTimeZoneOffset
+	Detail  string `json:"Detail,omitempty"`
 	Success bool
 	// Value   interface{}
 }
@@ -149,6 +150,10 @@ func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 	res, err := c.Client.Do(req)
 	defer res.Body.Close()
 
+	// fmt.Println(requestBody.Value)
+	// data, _ := ioutil.ReadAll(res.Body)
+	// fmt.Println(string(data))
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -157,7 +162,8 @@ func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 	json.NewDecoder(res.Body).Decode(&makeResResponse)
 
 	if !makeResResponse.Success {
-		panic("Attempted to make reservation for ")
+		fmt.Println(makeResResponse)
+		panic("Attempted to make reservation but received message " + makeResResponse.Message + ` and detail ` + makeResResponse.Detail)
 	}
 
 	return nil

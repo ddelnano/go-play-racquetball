@@ -1,0 +1,11 @@
+{
+    "reservations": [
+        {
+            "day": "Wednesday",
+            "time": "6:00",
+            "clubID": "1010",
+            "clubDescription": "PITTSBURGH-PENN AVE",
+            "duration": "60"
+        }
+    ]
+}

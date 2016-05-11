@@ -64,3 +64,21 @@ func TestDailyReservations(t *testing.T) {
 	}
 	assert.Equal(t, 2, len(config.DailyReservations()))
 }
+
+func TestReservationsForWeek(t *testing.T) {
+	c := Configuration{
+		Reservations: []Reservation{Reservation{
+			Day:       time.Now().Weekday().String(),
+			StartTime: rtime.UTCTime{time.Now()},
+		},
+			Reservation{
+				Day:       (time.Now().Weekday() + 1).String(),
+				StartTime: rtime.UTCTime{time.Now()},
+			},
+		},
+	}
+	res := c.ReservationsForWeek()
+	assert.Equal(t, 1, len(res))
+	ymdFormat := "2006-02-01"
+	assert.Equal(t, time.Now().AddDate(0, 0, 7).Format(ymdFormat), res[0].StartTime.Format(ymdFormat))
+}
