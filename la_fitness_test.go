@@ -262,8 +262,14 @@ func TestMakeReservationWhenLaRespondsWithSuccessFalse(t *testing.T) {
 }
 
 func TestLaFitnessRequest(t *testing.T) {
-	requestBody := NewLaRequestBody(nil)
+	data := struct {
+		Payload string
+	}{
+		Payload: "Payload",
+	}
+	requestBody := NewLaRequestBody(data)
 	assert.Equal(t, "iPhone", requestBody.Client.OSName)
+	assert.Equal(t, data, requestBody.Value)
 }
 
 func Test_transformReservations(t *testing.T) {
