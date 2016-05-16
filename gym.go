@@ -15,4 +15,5 @@ type Reservation struct {
 type GymClient interface {
 	GetReservations() ([]Reservation, error)
 	MakeReservation(*Reservation) ([]Reservation, error)
+	DeleteReservation(id int64) error
 }

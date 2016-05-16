@@ -2,7 +2,6 @@ package racquetball
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -36,20 +35,22 @@ func TestMain(m *testing.M) {
 
 func TestMakingReservations(t *testing.T) {
 	loc, _ := time.LoadLocation("America/New_York")
-	time, _ := time.ParseInLocation(iso8601Format, "2016-05-11T05:00:00.000", loc)
+	time, _ := time.ParseInLocation(iso8601Format, "2016-05-20T05:00:00.000", loc)
 	res := Reservation{
-		Day:             "Wednesday",
+		Day:             "Friday",
 		StartTime:       rtime.UTCTime{time},
 		EndTime:         "",
 		Duration:        "60",
 		ClubID:          "1010",
 		ClubDescription: "PITTSBURGH-PENN AVE",
 	}
-	fmt.Println(client, res)
-	// client.MakeReservation(res)
-	// reservations, err := client.GetReservations()
-	// fmt.Println(reservations, err)
-	// fmt.Println("oh yea")
+	id := client.MakeReservation(res)
+
+	if id <= 0 {
+		t.Errorf("AmenititesAppointmentID %d must be valid ID", id)
+	}
+
+	client.DeleteReservation(id)
 }
 
 func TestIntegrationForGetReservations(t *testing.T) {

@@ -171,6 +171,31 @@ func TestMakeReservation(t *testing.T) {
 	laClient.MakeReservation(*res)
 }
 
+func TestDeleteReservation(t *testing.T) {
+	var id int64
+	id = 10000
+
+	mux := http.NewServeMux()
+	mux.HandleFunc(deleteResvationsUrl, func(w http.ResponseWriter, r *http.Request) {
+		testRequestMethod(t, r, "POST")
+		testBasicAuthSet(t, r)
+
+		w.Write([]byte(`{
+		  "Message": "",
+		  "Success": true
+		}`))
+	})
+
+	s := httptest.NewServer(mux)
+	defer s.Close()
+
+	client := http.DefaultClient
+	baseUrl, _ := url.Parse(s.URL)
+	cred := Credentials{Username: "ddelnano", Password: "password"}
+	laClient := NewLaFitnessClient(client, baseUrl, cred)
+	laClient.DeleteReservation(id)
+}
+
 func TestMakeReservationWhenLaRespondsWithSuccessFalse(t *testing.T) {
 	res := new(Reservation)
 	mux := http.NewServeMux()
@@ -206,6 +231,17 @@ func TestMakeReservationWhenLaRespondsWithSuccessFalse(t *testing.T) {
 	assert.Panics(t, func() {
 		laClient.MakeReservation(*res)
 	})
+}
+
+func TestDeleteReservationRequest(t *testing.T) {
+	var id int64
+	id = 1000000
+	req := NewDeleteReservationRequest(id)
+	delReq := req.Request.Value.(DeleteReservationRequest)
+
+	if delReq.AmenititesAppointmentID != id {
+		t.Errorf("AmenititesAppointmentID should equal id for request")
+	}
 }
 
 func TestLaFitnessRequest(t *testing.T) {

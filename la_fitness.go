@@ -13,6 +13,7 @@ import (
 const (
 	baseReservationsUrl = "/LAF_S4.5.2/Services/Private.svc/GetUpComingAppointments"
 	makeReservationUrl  = "/LAF_S4.5.2/Services/Private.svc/CreateAmenityAppointment_2"
+	deleteResvationsUrl = "/LAF_S4.5.2/Services/Private.svc/DeleteAmenityAppointment"
 	iso8601Format       = "2006-01-02T15:04:00.000"
 )
 
@@ -20,15 +21,19 @@ type LaFitnessRequest struct {
 	Request LaRequestBody `json:"request"`
 }
 
+type LaFitnessDeleteResponse struct {
+	Success bool
+}
+
 type amenityAppointment struct {
-	AmenitiesAppointmentID int
-	AmenityDescription     string
-	ClubDescription        string
-	ClubID                 int
-	EndTime                string
-	Notes                  string
-	OtherCustomerNames     string
-	StartTime              string
+	AmenititesAppointmentID int64
+	AmenityDescription      string
+	ClubDescription         string
+	ClubID                  int
+	EndTime                 string
+	Notes                   string
+	OtherCustomerNames      string
+	StartTime               string
 }
 
 type getReservationResponse struct {
@@ -49,7 +54,7 @@ type MakeReservationResponse struct {
 	// ServerTimeZoneOffset
 	Detail  string `json:"Detail,omitempty"`
 	Success bool
-	// Value   interface{}
+	Value   amenityAppointment `json:"Value,omitempty"`
 }
 
 type MakeReservationRequest struct {
@@ -60,6 +65,10 @@ type MakeReservationRequest struct {
 	AmenityID           string
 	StartDate           string
 	StartDateUTC        string
+}
+
+type DeleteReservationRequest struct {
+	AmenititesAppointmentID int64
 }
 
 type Credentials struct {
@@ -84,6 +93,48 @@ func NewLaFitnessClient(client *http.Client, baseUrl *url.URL, cred Credentials)
 		Client:      client,
 		BaseUrl:     baseUrl,
 		Credentials: cred,
+	}
+}
+
+func (c *LaFitnessClient) DeleteReservation(id int64) error {
+	baseUrl := c.BaseUrl.String()
+	url := fmt.Sprintf("%s%s", baseUrl, deleteResvationsUrl)
+
+	deleteReq := NewDeleteReservationRequest(id)
+
+	body, err := EncodeBody(deleteReq)
+
+	if err != nil {
+		panic("Encoding body for delete req failed")
+	}
+
+	req, _ := http.NewRequest("POST", url, body)
+
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth(c.Credentials.Username, c.Credentials.Password)
+	res, err := c.Client.Do(req)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	defer res.Body.Close()
+
+	var deleteRes LaFitnessDeleteResponse
+	err = json.NewDecoder(res.Body).Decode(&deleteRes)
+
+	if !deleteRes.Success {
+		// TODO: Should perform some kind of logging
+		panic("We failed")
+	}
+	return nil
+}
+
+func NewDeleteReservationRequest(id int64) *LaFitnessRequest {
+	deleteRequest := DeleteReservationRequest{
+		id,
+	}
+	return &LaFitnessRequest{
+		Request: *NewLaRequestBody(deleteRequest),
 	}
 }
 
@@ -135,7 +186,7 @@ func NewMakeReservationRequest(res Reservation) *LaFitnessRequest {
 	}
 }
 
-func (c *LaFitnessClient) MakeReservation(r Reservation) error {
+func (c *LaFitnessClient) MakeReservation(r Reservation) int64 {
 	baseUrl := c.BaseUrl.String()
 	url := fmt.Sprintf("%s%s", baseUrl, makeReservationUrl)
 	requestBody := NewMakeReservationRequest(r)
@@ -151,10 +202,6 @@ func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 	res, err := c.Client.Do(req)
 	defer res.Body.Close()
 
-	// fmt.Println(requestBody.Value)
-	// data, _ := ioutil.ReadAll(res.Body)
-	// fmt.Println(string(data))
-
 	if err != nil {
 		panic(err.Error())
 	}
@@ -167,7 +214,7 @@ func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 		panic("Attempted to make reservation but received message " + makeResResponse.Message + ` and detail ` + makeResResponse.Detail)
 	}
 
-	return nil
+	return makeResResponse.Value.AmenititesAppointmentID
 }
 
 // TODO: Needs tests
