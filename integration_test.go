@@ -34,6 +34,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestMakingReservations(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	loc, _ := time.LoadLocation("America/New_York")
 	time, _ := time.ParseInLocation(iso8601Format, "2016-05-20T05:00:00.000", loc)
 	res := Reservation{
@@ -54,6 +57,9 @@ func TestMakingReservations(t *testing.T) {
 }
 
 func TestIntegrationForGetReservations(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	res, err := client.GetReservations()
 
 	if err != nil {

@@ -10,3 +10,4 @@ env:
 before_install:
   - echo $LA_USERNAME > .env
   - echo $LA_PASSWORD >> .env
+script: go test ./... -short -v
