@@ -2,13 +2,11 @@ package racquetball
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"reflect"
 	"testing"
-	"time"
 
 	rtime "github.com/ddelnano/racquetball/time"
 	"github.com/fatih/structs"
@@ -50,22 +48,6 @@ func getReservationsResponse() []byte {
 	  }
 	}
 	`)
-}
-
-func TestNewReservation(t *testing.T) {
-	r := NewReservation()
-	assert.Equal(t, r.Day, "Sunday")
-}
-
-func TestClientCanGetReservations(t *testing.T) {
-	// h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprintln(w, "Hello, client")
-	// })
-
-	// ts := httptest.NewServer(h)
-	// defer ts.Close()
-
-	// res, err := http.Get(ts.URL)
 }
 
 func TestNewLaFitnessClient(t *testing.T) {
@@ -122,7 +104,6 @@ func TestGetReservations(t *testing.T) {
 		expected := LaFitnessRequest{
 			Request: *NewLaRequestBody(nil),
 		}
-		fmt.Printf("Testing: %+v\n\n\n", expected)
 		if !reflect.DeepEqual(expected, v) {
 			t.Errorf("Request body = %#v, expected %#v", v, expected)
 		}
@@ -145,40 +126,6 @@ func TestGetReservations(t *testing.T) {
 	// assert.Equal(t, "12:30", reservations[0].StartTime)
 	assert.IsType(t, rtime.UTCTime{}, reservations[0].StartTime)
 	assert.Nil(t, ok)
-}
-
-func TestMakeNewReservationRequest(t *testing.T) {
-	res := Reservation{
-		Duration: "60",
-		StartTime: rtime.UTCTime{
-			time.Now(),
-		},
-	}
-	// expectedRequest := LaFitnessRequest{
-	// 	Value: MakeReservationRequest{
-	// 		ClubID:              "1010",
-	// 		ClubDescription:     "PITTSBURGH-PENN AVE",
-	// 		Duration:            duration,
-	// 		AmenitiesApptTypeID: "1",
-	// 		AmenityID:           "0",
-	// 		StartDate:           "2016-05-10T09:00:00.000",
-	// 		StartDateUTC:        "2016-05-10T13:00:00.000Z",
-	// 	},
-	// }
-	// var startTime rtime.UTCTime
-	// data := []byte(`{"Time":"6:30"}`)
-	// json.Unmarshal(data, startTime)
-	// res := Reservation{
-	// 	Day:       "Sunday",
-	// 	StartTime: startTime,
-	// 	Duration:  duration,
-	// }
-	resRequest := NewMakeReservationRequest(res)
-	fmt.Println(resRequest)
-	// makeResRequest := resRequest.Request.Value.(MakeReservationRequest)
-	// assert.Equal(t, res.Duration, makeResRequest.Duration, "Duration should make Reservation's")
-	// assert.Equal(t, res.StartTime.ISO8601(), makeResRequest.StartDate)
-	// assert.Equal(t, res.StartTime.ISO8601UTC(), makeResRequest.StartDateUTC)
 }
 
 // TODO: Handle errors and if success key in response is false

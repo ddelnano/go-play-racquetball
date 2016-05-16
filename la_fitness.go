@@ -67,13 +67,6 @@ type Credentials struct {
 	Password string
 }
 
-// TODO: Should probably be deleted
-func NewReservation() *Reservation {
-	return &Reservation{
-		Day: "Sunday",
-	}
-}
-
 type Client struct {
 	Gym     GymClient
 	baseUrl *url.URL
@@ -170,7 +163,7 @@ func (c *LaFitnessClient) MakeReservation(r Reservation) error {
 	json.NewDecoder(res.Body).Decode(&makeResResponse)
 
 	if !makeResResponse.Success {
-		fmt.Println(makeResResponse)
+		// TODO: Log response data to help for debugging
 		panic("Attempted to make reservation but received message " + makeResResponse.Message + ` and detail ` + makeResResponse.Detail)
 	}
 
