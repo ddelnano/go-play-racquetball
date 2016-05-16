@@ -281,8 +281,6 @@ func Test_transformReservations(t *testing.T) {
 	res := transformReservations(appts)
 
 	assert.Equal(t, 2, len(res))
-	// assert.Equal(t, "14:04", res[0].StartTime)
-	// assert.Equal(t, "12:30", res[1].StartTime)
 	assert.IsType(t, rtime.UTCTime{}, res[0].StartTime)
 	assert.IsType(t, rtime.UTCTime{}, res[1].StartTime)
 	assert.Equal(t, "15:04", res[0].EndTime)
