@@ -2,3 +2,7 @@
     - Travis build needs to use what is in travis.yml
 - Have la fitness api client schedule reservations
     - Integration testing the api client to add reservations
+
+
+Highest Importance
+- API RESPONSE MUST MATCH WHAT THEY SHOULD BE!!!! FIND OUT BEST WAY TO TEST THIS!!!

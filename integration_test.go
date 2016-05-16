@@ -19,7 +19,6 @@ func TestMakingReservations(t *testing.T) {
 	}
 	laUsername := os.Getenv("LA_USERNAME")
 	laPassword := os.Getenv("LA_PASSWORD")
-	fmt.Println("Awe yea go", laUsername, laPassword)
 
 	cred := Credentials{Username: laUsername, Password: laPassword}
 	baseUrl, _ := url.Parse("https://publicapi.lafitness.com")
@@ -38,9 +37,38 @@ func TestMakingReservations(t *testing.T) {
 		ClubID:          "1010",
 		ClubDescription: "PITTSBURGH-PENN AVE",
 	}
-	fmt.Println(res)
-	laClient.MakeReservation(res)
-	reservations, err := laClient.GetReservations()
-	fmt.Println(reservations, err)
-	fmt.Println("oh yea")
+	fmt.Println(laClient, res)
+	// laClient.MakeReservation(res)
+	// reservations, err := laClient.GetReservations()
+	// fmt.Println(reservations, err)
+	// fmt.Println("oh yea")
+}
+
+func TestIntegrationForGetReservations(t *testing.T) {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+	laUsername := os.Getenv("LA_USERNAME")
+	laPassword := os.Getenv("LA_PASSWORD")
+
+	cred := Credentials{Username: laUsername, Password: laPassword}
+	baseUrl, _ := url.Parse("https://publicapi.lafitness.com")
+	httpClient := http.DefaultClient
+	laClient := NewLaFitnessClient(httpClient, baseUrl, cred)
+
+	// // c, _ := Load("./res.json", mockReservationValiationPass)
+	// // res := c.ReservationsForWeek()
+	// loc, _ := time.LoadLocation("America/New_York")
+	// time, _ := time.ParseInLocation(iso8601Format, "2016-05-11T05:00:00.000", loc)
+	// res := Reservation{
+	// 	Day:             "Wednesday",
+	// 	StartTime:       rtime.UTCTime{time},
+	// 	EndTime:         "",
+	// 	Duration:        "60",
+	// 	ClubID:          "1010",
+	// 	ClubDescription: "PITTSBURGH-PENN AVE",
+	// }
+	res, err := laClient.GetReservations()
+	fmt.Printf("Upcoming reservations %#v", res)
 }

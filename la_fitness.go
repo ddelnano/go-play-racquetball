@@ -17,8 +17,7 @@ const (
 )
 
 type LaFitnessRequest struct {
-	Value   interface{}
-	Request LaRequestBody
+	Request LaRequestBody `json:"request"`
 }
 
 type amenityAppointment struct {
@@ -68,6 +67,7 @@ type Credentials struct {
 	Password string
 }
 
+// TODO: Should probably be deleted
 func NewReservation() *Reservation {
 	return &Reservation{
 		Day: "Sunday",
@@ -97,7 +97,10 @@ func NewLaFitnessClient(client *http.Client, baseUrl *url.URL, cred Credentials)
 func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
 	baseUrl := c.BaseUrl.String()
 	url := fmt.Sprintf("%s%s", baseUrl, baseReservationsUrl)
-	requestBody := NewLaRequestBody()
+	requestBody := LaFitnessRequest{
+		Request: *NewLaRequestBody(nil),
+	}
+	// fmt.Println(requestBody, c.Credentials)
 	body, err := EncodeBody(requestBody)
 
 	if err != nil {
@@ -116,21 +119,26 @@ func (c *LaFitnessClient) GetReservations() ([]Reservation, error) {
 	defer res.Body.Close()
 	var reservations getReservationResponse
 	err = json.NewDecoder(res.Body).Decode(&reservations)
+
+	if !reservations.Success {
+		// fmt.Println(reservations)
+		panic("We failed")
+	}
 	return transformReservations(reservations.Value.AmenityAppointments), err
 }
 
 func NewMakeReservationRequest(res Reservation) *LaFitnessRequest {
+	makeResReq := MakeReservationRequest{
+		ClubID:              "1010",
+		ClubDescription:     "PITTSBURGH-PENN AVE",
+		Duration:            res.Duration,
+		AmenitiesApptTypeID: "1",
+		AmenityID:           "0",
+		StartDate:           res.StartTime.ISO8601(),
+		StartDateUTC:        res.StartTime.ISO8601UTC(),
+	}
 	return &LaFitnessRequest{
-		Value: MakeReservationRequest{
-			ClubID:              "1010",
-			ClubDescription:     "PITTSBURGH-PENN AVE",
-			Duration:            res.Duration,
-			AmenitiesApptTypeID: "1",
-			AmenityID:           "0",
-			StartDate:           res.StartTime.ISO8601(),
-			StartDateUTC:        res.StartTime.ISO8601UTC(),
-		},
-		Request: *NewLaRequestBody(),
+		Request: *NewLaRequestBody(makeResReq),
 	}
 }
 
@@ -186,23 +194,19 @@ func transformReservations(r []amenityAppointment) []Reservation {
 }
 
 type LaRequestBody struct {
-	Request laRequest `json:"request"`
-}
-
-type laRequest struct {
-	Client laClient `json:"Client"`
+	Client laClient    `json:"Client"`
+	Value  interface{} `json:"Value"`
 }
 
 type laClient struct {
 	OSName string `json:"OSName"`
 }
 
-func NewLaRequestBody() *LaRequestBody {
+func NewLaRequestBody(v interface{}) *LaRequestBody {
 	return &LaRequestBody{
-		Request: laRequest{
-			Client: laClient{
-				OSName: "iPhone",
-			},
+		Client: laClient{
+			OSName: "iPhone",
 		},
+		Value: v,
 	}
 }
