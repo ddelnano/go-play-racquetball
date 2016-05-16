@@ -1,6 +1,7 @@
 package racquetball
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -12,21 +13,28 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func TestMakingReservations(t *testing.T) {
+var laUsername, laPassword string
+var cred Credentials
+var client *LaFitnessClient
+
+func TestMain(m *testing.M) {
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
-	laUsername := os.Getenv("LA_USERNAME")
-	laPassword := os.Getenv("LA_PASSWORD")
+	laUsername = os.Getenv("LA_USERNAME")
+	laPassword = os.Getenv("LA_PASSWORD")
 
-	cred := Credentials{Username: laUsername, Password: laPassword}
+	cred = Credentials{Username: laUsername, Password: laPassword}
 	baseUrl, _ := url.Parse("https://publicapi.lafitness.com")
 	httpClient := http.DefaultClient
-	laClient := NewLaFitnessClient(httpClient, baseUrl, cred)
+	client = NewLaFitnessClient(httpClient, baseUrl, cred)
 
-	// c, _ := Load("./res.json", mockReservationValiationPass)
-	// res := c.ReservationsForWeek()
+	flag.Parse()
+	os.Exit(m.Run())
+}
+
+func TestMakingReservations(t *testing.T) {
 	loc, _ := time.LoadLocation("America/New_York")
 	time, _ := time.ParseInLocation(iso8601Format, "2016-05-11T05:00:00.000", loc)
 	res := Reservation{
@@ -37,38 +45,17 @@ func TestMakingReservations(t *testing.T) {
 		ClubID:          "1010",
 		ClubDescription: "PITTSBURGH-PENN AVE",
 	}
-	fmt.Println(laClient, res)
-	// laClient.MakeReservation(res)
-	// reservations, err := laClient.GetReservations()
+	fmt.Println(client, res)
+	// client.MakeReservation(res)
+	// reservations, err := client.GetReservations()
 	// fmt.Println(reservations, err)
 	// fmt.Println("oh yea")
 }
 
 func TestIntegrationForGetReservations(t *testing.T) {
-	err := godotenv.Load()
+	res, err := client.GetReservations()
+
 	if err != nil {
-		panic(err)
+		t.Errorf("Trying to get reservations failed with reservations: %#v and error: %#v", res, err)
 	}
-	laUsername := os.Getenv("LA_USERNAME")
-	laPassword := os.Getenv("LA_PASSWORD")
-
-	cred := Credentials{Username: laUsername, Password: laPassword}
-	baseUrl, _ := url.Parse("https://publicapi.lafitness.com")
-	httpClient := http.DefaultClient
-	laClient := NewLaFitnessClient(httpClient, baseUrl, cred)
-
-	// // c, _ := Load("./res.json", mockReservationValiationPass)
-	// // res := c.ReservationsForWeek()
-	// loc, _ := time.LoadLocation("America/New_York")
-	// time, _ := time.ParseInLocation(iso8601Format, "2016-05-11T05:00:00.000", loc)
-	// res := Reservation{
-	// 	Day:             "Wednesday",
-	// 	StartTime:       rtime.UTCTime{time},
-	// 	EndTime:         "",
-	// 	Duration:        "60",
-	// 	ClubID:          "1010",
-	// 	ClubDescription: "PITTSBURGH-PENN AVE",
-	// }
-	res, err := laClient.GetReservations()
-	fmt.Printf("Upcoming reservations %#v", res)
 }
