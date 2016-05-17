@@ -37,11 +37,15 @@ func TestMakingReservations(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	loc, _ := time.LoadLocation("America/New_York")
-	time, _ := time.ParseInLocation(iso8601Format, "2016-05-20T05:00:00.000", loc)
+	// Get reservation start time to be next friday at 5 AM
+	// this should be one of the most available times during the
+	// week.
+	startTime := rtime.UTCTime{
+		time.Now(),
+	}
 	res := Reservation{
 		Day:             "Friday",
-		StartTime:       rtime.UTCTime{time},
+		StartTime:       startTime.UpcomingWeekdayAtHour(time.Friday, 5),
 		EndTime:         "",
 		Duration:        "60",
 		ClubID:          "1010",

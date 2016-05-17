@@ -52,3 +52,14 @@ func (t *UTCTime) ISO8601UTC() string {
 	loc, _ := time.LoadLocation("UTC")
 	return t.In(loc).Format(iso8601Format) + `Z`
 }
+
+// TODO: Currently does not work for days that are earlier in the week
+func (t *UTCTime) UpcomingWeekdayAtHour(weekday time.Weekday, hour int) UTCTime {
+	loc, _ := time.LoadLocation("America/New_York")
+	tim := time.Date(t.Year(), t.Month(), t.Day(), hour, 0, 0, 0, loc)
+	offset := 0
+	if weekday <= t.Weekday() {
+		offset += 7
+	}
+	return UTCTime{tim.AddDate(0, 0, -int(t.Weekday())+offset).AddDate(0, 0, int(weekday))}
+}

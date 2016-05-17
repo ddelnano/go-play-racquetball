@@ -110,3 +110,89 @@ func TestISO8601UTC(t *testing.T) {
 		t.Errorf("Expected ISO 8601 format in UTC but received %s", value)
 	}
 }
+
+func TestGetNextWeekday(t *testing.T) {
+	loc, _ := time.LoadLocation("America/New_York")
+	n := time.Date(2016, 5, 16, 15, 30, 30, 0, loc)
+	tim := UTCTime{n}
+
+	days := []struct {
+		Weekday time.Weekday
+		Hour    int
+	}{
+		{
+			Weekday: time.Sunday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Monday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Tuesday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Wednesday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Thursday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Friday,
+			Hour:    5,
+		},
+		{
+			Weekday: time.Saturday,
+			Hour:    5,
+		},
+	}
+
+	for _, v := range days {
+		// Get the next weekday at 5:00 AM
+		nextWeekday := tim.UpcomingWeekdayAtHour(v.Weekday, v.Hour)
+
+		day := nextWeekday.Day()
+		expectedDay := getDateOfUpcomingWeekday(v.Weekday)
+		if day != getDateOfUpcomingWeekday(v.Weekday) {
+			t.Errorf("Day should be %d, instead received %d", expectedDay, day)
+		}
+
+		hour := nextWeekday.Hour()
+		if hour != v.Hour {
+			t.Errorf("Hour should be %d, instead received %d", v.Hour, hour)
+		}
+
+		min := nextWeekday.Minute()
+		if min != 0 {
+			t.Errorf("Min should be 0, instead received %d", min)
+		}
+
+		secs := nextWeekday.Second()
+		if secs != 0 {
+			t.Errorf("Secs should be 0, instead received %d", secs)
+		}
+	}
+}
+
+func getDateOfUpcomingWeekday(weekday time.Weekday) int {
+	switch weekday {
+	case time.Sunday:
+		return 22
+	case time.Monday:
+		return 23
+	case time.Tuesday:
+		return 17
+	case time.Wednesday:
+		return 18
+	case time.Thursday:
+		return 19
+	case time.Friday:
+		return 20
+	case time.Saturday:
+		return 21
+	}
+	return 0
+}
