@@ -11,4 +11,4 @@ before_install:
   - echo $TRAVIS_TAG
   - echo $LA_USERNAME > .env
   - echo $LA_PASSWORD >> .env
-script: travis.sh
+script: ./travis.sh
