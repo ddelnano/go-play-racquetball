@@ -1,5 +1,5 @@
 // Package main provides ...
-package racquetball
+package main
 
 import (
 	"fmt"

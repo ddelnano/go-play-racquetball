@@ -1,5 +1,5 @@
 // Package config provides ...
-package racquetball
+package main
 
 import (
 	"encoding/json"
