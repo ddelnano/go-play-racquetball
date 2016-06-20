@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ev
 
 flags='-short'
 if [ "$TRAVIS_TAG" ]; then
@@ -7,3 +8,8 @@ if [ "$TRAVIS_TAG" ]; then
 fi
 
 go test ./... $flags -v
+
+if [ "$TRAVIS_TAG" ]; then
+    docker build -t ddelnano/go-play-racq:$TRAVIS_TAG .
+    docker push 
+fi

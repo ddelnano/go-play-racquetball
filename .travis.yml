@@ -1,7 +1,6 @@
 language: go
 go:
-- 1.5.4
-- 1.6.2
+- 1.6
 go_import_path: github.com/ddelnano/racquetball
 env:
   global:
@@ -20,5 +19,3 @@ before_install:
 install:
   - $GOPATH/bin/govendor sync
 script: "./travis.sh"
-after_sucess:
-  - $TRAVIS_TAG && make build && docker build -t ddelnano/go-play-racq:$TRAVIS_TAG && docker push
