@@ -17,7 +17,7 @@ before_install:
   - go get -u github.com/kardianos/govendor
   - go install github.com/kardianos/govendor
   - chmod +x ./travis.sh
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker login -e="ddelnano@gmail.com" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 install:
   - $GOPATH/bin/govendor sync
 script: "./travis.sh"
