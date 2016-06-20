@@ -1,9 +1,9 @@
 #!/bin/bash
 
-flags = '-short'
+flags='-short'
 if [ "$TRAVIS_TAG" ]; then
     echo "Release being made... Running all tests (including integration)"
-    flags = ''
+    flags=''
 fi
 
 go test ./... $flags -v
