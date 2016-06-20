@@ -67,12 +67,13 @@ func TestDailyReservations(t *testing.T) {
 
 func TestReservationsForWeek(t *testing.T) {
 	c := Configuration{
-		Reservations: []Reservation{Reservation{
-			Day:       time.Now().Weekday().String(),
-			StartTime: rtime.UTCTime{time.Now()},
-		},
+		Reservations: []Reservation{
 			Reservation{
-				Day:       (time.Now().Weekday() + 1).String(),
+				Day:       time.Now().Weekday().String(),
+				StartTime: rtime.UTCTime{time.Now()},
+			},
+			Reservation{
+				Day:       ((time.Now().Weekday() + 1) % 7).String(),
 				StartTime: rtime.UTCTime{time.Now()},
 			},
 		},
