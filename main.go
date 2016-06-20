@@ -2,34 +2,42 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
+const (
+	laFitnessBaseUri = "https://publicapi.lafitness.com"
+)
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
+		_, ok := err.(*os.PathError)
+		if ok {
+			panic("You must have an .env file with LA_USERNAME and LA_PASSWORD defined")
+		}
 		panic(err)
 	}
 	laUsername := os.Getenv("LA_USERNAME")
 	laPassword := os.Getenv("LA_PASSWORD")
-	fmt.Println("Awe yea go", laUsername, laPassword)
-	// cred := Credentials{Username: laUsername, Password: laPassword}
-	// baseUrl := "https://publicapi.lafitness.com"
-	// laUrl, _ := url.Parse(baseUrl)
-	// client := http.DefaultClient
-	defer func() {
-		// if r := recover(); r != nil {
-		// 	fmt.Println("Recovered in f", r)
-		// }
-	}()
-	// baseUrl, _ := url.Parse("https://publicapi.lafitness.com")
-	// httpClient := http.DefaultClient
-	// cred := Credentials{Username: laUsername, Password: laPassword}
-	// laClient := NewLaFitnessClient(httpClient, baseUrl, cred)
-	// reservations, err := laClient.GetReservations()
-	// fmt.Println(reservations, err)
-	// fmt.Println("oh yea")
+	config, err := Load("./config.json", ValidateReservations)
+	if err != nil {
+		panic(err)
+	}
+	reservations := config.ReservationsForWeek()
+	baseUrl, _ := url.Parse(laFitnessBaseUri)
+	httpClient := http.DefaultClient
+	cred := Credentials{
+		Username: laUsername,
+		Password: laPassword,
+	}
+	laClient := NewLaFitnessClient(httpClient, baseUrl, cred)
+
+	for _, res := range reservations {
+		laClient.MakeReservation(res)
+	}
 }
