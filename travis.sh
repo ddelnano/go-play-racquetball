@@ -12,5 +12,5 @@ go test ./... $flags -v
 if [ "$TRAVIS_TAG" ]; then
     make build
     docker build -t ddelnano/go-play-racq:$TRAVIS_TAG .
-    docker push ddelnano/go-play-racq:$TRAVIS_TAG .
+    docker push ddelnano/go-play-racq:$TRAVIS_TAG
 fi
