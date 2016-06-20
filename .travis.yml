@@ -1,3 +1,6 @@
+sudo: required
+services:
+  - docker
 language: go
 go:
 - 1.6
@@ -16,6 +19,7 @@ before_install:
   - go get -u github.com/kardianos/govendor
   - go install github.com/kardianos/govendor
   - chmod +x ./travis.sh
+  - docker login -e="ddelnano@gmail.com" -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
 install:
   - $GOPATH/bin/govendor sync
 script: "./travis.sh"
