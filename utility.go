@@ -1,4 +1,4 @@
-package racquetball
+package main
 
 import (
 	"bytes"

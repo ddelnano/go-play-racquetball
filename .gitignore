@@ -1,3 +1,5 @@
 .env
 tags
 racquetball
+!vendor/vendor.json
+vendor/*

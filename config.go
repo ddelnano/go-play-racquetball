@@ -1,5 +1,5 @@
 // Package config provides ...
-package racquetball
+package main
 
 import (
 	"encoding/json"
@@ -31,7 +31,7 @@ func Load(filepath string, validate ReservationValidation) (*Configuration, erro
 
 func (c *Configuration) ReservationsForWeek() []Reservation {
 	res := c.DailyReservations()
-	weekRes := make([]Reservation, 0)
+	weekRes := make([]Reservation, 0, len(res))
 	for _, v := range res {
 		v.StartTime.Time = v.StartTime.AddDate(0, 0, 7)
 		weekRes = append(weekRes, v)
