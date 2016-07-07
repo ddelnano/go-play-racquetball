@@ -10,14 +10,15 @@ This is was an excuse to try out Go and write something simple.
 
 ## Running
 
-Go Play Racquetball can be run from the [ddelnano/go-play-racq](https://hub.docker.com/r/ddelnano/go-play-racq/) docker image hosted on docker hub.  All that is needed to run the add is an `.env` file that specifies your La Fitness username and password and a `config.json` file that specifies your racquetball reservation schedule.  A sample of each is shown below.
+Go Play Racquetball can be run from the [ddelnano/go-play-racq](https://hub.docker.com/r/ddelnano/go-play-racq/) docker image hosted on docker hub.  All that is needed to run the application is an `.env` file that specifies your La Fitness username and password and a `config.json` file that specifies your racquetball reservation schedule.  A sample of each is shown below.
 
+.env file
 ```
-# .env file
 LA_USERNAME: username
 LA_PASSWORD: password
 ```
 
+config.json
 ```json
 {
   "reservations": [
@@ -34,7 +35,7 @@ LA_PASSWORD: password
 
 The config.json file is validated through JSON schema and the exact constraints can be seen [here](reservation.json).
 
-Once you have both of those files the docker image can easily be run via a cronjob like so.
+Once you have both of those files the docker image can easily be run mounting volumes that contain the config.json and .env file like so.
 
 ```bash
 docker run -v /path/to/.env:/src/.env -v /path/to/config.json:/src/config.json ddelnano/go-play-racq:v0.3.1
