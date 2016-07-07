@@ -8,19 +8,41 @@ If you are still reading this I am surprised you haven't stopped and thought thi
 
 This is was an excuse to try out Go and write something simple.
 
+## Running
+
+Go Play Racquetball can be run from the [ddelnano/go-play-racq](https://hub.docker.com/r/ddelnano/go-play-racq/) docker image hosted on docker hub.  All that is needed to run the add is an `.env` file that specifies your La Fitness username and password and a `config.json` file that specifies your racquetball reservation schedule.  A sample of each is shown below.
+
+```
+# .env file
+LA_USERNAME: username
+LA_PASSWORD: password
+```
+
+```json
+{
+  "reservations": [
+    {
+      "day": "Wednesday",
+      "time": "14:00",
+      "clubID": "1010",
+      "clubDescription": "PITTSBURGH-PENN AVE",
+      "duration": "60"
+    }
+  ]
+}
+```
+
+The config.json file is validated through JSON schema and the exact constraints can be seen [here](reservation.json).
+
+Once you have both of those files the docker image can easily be run via a cronjob like so.
+
+```bash
+docker run -v /path/to/.env:/src/.env -v /path/to/config.json:/src/config.json ddelnano/go-play-racq:v0.3.1
+```
+
 ## Getting to v1.0
 
-Create cronjob that runs go app every day at midnight.  It will schedule the reservation for 2 weeks from the current date.  It should be able to set a username and password so that this would work for multiple users of the app.
+### Todos
 
-List of Todos
-- [ ] Dockerize
-  - [ ] Container that builds the binary for the cronserver
-  - [ ] Cronjob server
-    - [ ] Runs go binary at midnight
-    - [ ] Runs integration tests during the day
-- [ ] Add ability to make reservations different user for a given location
-
-## Long term goals
-- [ ] Get diff of currently scheduled reservations and future ones
-- [ ] More robust logging and error handling
-- [ ] Use sms to update recurring reservations through Go web service.
+- [ ] Schedule all unreserved court times between the current day and 2 weeks from the current day.  This is how far in advance la fitness allows and would allow for scheduling as early as permitted.
+- [ ] Remove need to know clubID, clubDescription?
