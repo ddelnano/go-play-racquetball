@@ -4,10 +4,6 @@ If you are as forgetful as I am then, you never remember to reserve your racquet
 is over! (if you are a la fitness member).  go-play-racquetball is an attempt to completely automate your recurring racquetball court reservations so
 you don't have to remember to.  
 
-If you are still reading this I am surprised you haven't stopped and thought this is the most useless project ever.
-
-This is was an excuse to try out Go and write something simple.
-
 ## Running
 
 Go Play Racquetball can be run from the [ddelnano/go-play-racq](https://hub.docker.com/r/ddelnano/go-play-racq/) docker image hosted on docker hub.  All that is needed to run the application is an `.env` file that specifies your La Fitness username and password and a `config.json` file that specifies your racquetball reservation schedule.  A sample of each is shown below.
