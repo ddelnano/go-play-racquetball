@@ -1,6 +1,6 @@
-![logo](assets/logo.png)
-
 ## Go Play Racquetball
+
+![logo](assets/logo.png)
 
 If you are as forgetful as I am then, you never remember to reserve your racquetball courts.  Well now your time of forgetting to reserve courts 
 is over! (if you are a la fitness member).  go-play-racquetball is an attempt to completely automate your recurring racquetball court reservations so
