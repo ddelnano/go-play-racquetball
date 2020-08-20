@@ -1,5 +1,7 @@
 ## Go Play Racquetball
 
+![logo](assets/logo.png)
+
 If you are as forgetful as I am then, you never remember to reserve your racquetball courts.  Well now your time of forgetting to reserve courts 
 is over! (if you are a la fitness member).  go-play-racquetball is an attempt to completely automate your recurring racquetball court reservations so
 you don't have to remember to.  
@@ -36,6 +38,17 @@ Once you have both of those files the docker image can easily be run mounting vo
 ```bash
 docker run -v /path/to/.env:/src/.env -v /path/to/config.json:/src/config.json ddelnano/go-play-racq:v0.3.1
 ```
+
+
+## Credits
+
+Thanks to Wai for his awesome work on the logo! You can see more of his work [here](http://waitu62.wix.com/designer-graphic).
+
+![logo](assets/logo.png)
+
+go-play-racquetball's logo is licensed under the Creative Commons 3.0 Attributions license.
+
+The original Golang Gopher was designed by [Renee French](https://reneefrench.blogspot.com/).
 
 ## Getting to v1.0
 
